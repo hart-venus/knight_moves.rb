@@ -14,6 +14,16 @@ set width: BOARD_SIZE
 set height: BOARD_SIZE + TILE_SIZE
 set background: 'black'
 
+Text.new(
+  'Starting Position',
+  font: 'Roboto-Black.ttf',
+  size: 24,
+  color: BLACK_COLOR,
+  x: 20,
+  y: BOARD_SIZE,
+  z: 10
+)
+
 Rectangle.new(
   x: 0,
   y: BOARD_SIZE - 20,
