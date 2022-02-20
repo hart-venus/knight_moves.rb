@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'ruby2d'
+slide_sound = Sound.new('slide.mp3')
+knight_location = [0, 0]
 
 BOARD_SIZE = 840
 TILE_SIZE = BOARD_SIZE / 8
@@ -14,9 +16,10 @@ set background: 'black'
 
 Rectangle.new(
   x: 0,
-  y: BOARD_SIZE,
+  y: BOARD_SIZE - 20,
   width: BOARD_SIZE,
-  height: TILE_SIZE,
+  height: TILE_SIZE + 20,
+  color: [1, 1, 1, 0.85],
   z: 2
 )
 
@@ -42,7 +45,7 @@ def world_to_map(x_coord, y_coord)
   [(x_coord / TILE_SIZE).to_i, (y_coord / TILE_SIZE).to_i]
 end
 
-my_knight = Image.new(
+@my_knight = Image.new(
   'chessKnight.png',
   width: TILE_SIZE,
   height: TILE_SIZE,
@@ -51,10 +54,18 @@ my_knight = Image.new(
 on :mouse_down do |event|
   if event.y < BOARD_SIZE
     map_coords = world_to_map(event.x, event.y)
-    my_knight.x = map_coords[0] * TILE_SIZE
-    my_knight.y = map_coords[1] * TILE_SIZE
+    knight_location = map_coords
+    slide_sound.play
   end
 end
 
+def lerp(start, stop, step)
+  (stop * step) + (start * (1.0 - step))
+end
+
+update do
+  @my_knight.x = lerp(@my_knight.x, knight_location[0] * TILE_SIZE, 0.2)
+  @my_knight.y = lerp(@my_knight.y, knight_location[1] * TILE_SIZE, 0.2)
+end
 draw_board
 show
