@@ -24,6 +24,16 @@ Text.new(
   z: 10
 )
 
+@initial_position_label = Text.new(
+  "#{knight_location[0]}, #{knight_location[1]}",
+  font: 'Roboto-ThinItalic.ttf',
+  size: 24,
+  color: BLACK_COLOR,
+  x: 80,
+  y: BOARD_SIZE + 30,
+  z: 10
+)
+
 Rectangle.new(
   x: 0,
   y: BOARD_SIZE - 20,
@@ -76,6 +86,8 @@ end
 update do
   @my_knight.x = lerp(@my_knight.x, knight_location[0] * TILE_SIZE, 0.2)
   @my_knight.y = lerp(@my_knight.y, knight_location[1] * TILE_SIZE, 0.2)
+  @initial_position_label.text = "#{knight_location[0]}, #{knight_location[1]}"
 end
+
 draw_board
 show
