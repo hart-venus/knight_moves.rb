@@ -8,8 +8,17 @@ WHITE_COLOR = '#ffd8cc'
 
 set title: 'knight_moves.rb'
 set width: BOARD_SIZE
-set height: BOARD_SIZE
+set height: BOARD_SIZE + TILE_SIZE
 set background: 'black'
+
+Rectangle.new(
+  x: 0,
+  y: BOARD_SIZE,
+  width: BOARD_SIZE,
+  height: TILE_SIZE,
+  z:2
+
+)
 
 def draw_board
   81.times do |time|
@@ -40,9 +49,11 @@ my_knight = Image.new(
   z: 1
 )
 on :mouse_down do |event|
-  map_coords = world_to_map(event.x, event.y)
-  my_knight.x = map_coords[0] * TILE_SIZE
-  my_knight.y = map_coords[1] * TILE_SIZE
+  if event.y < BOARD_SIZE
+    map_coords = world_to_map(event.x, event.y)
+    my_knight.x = map_coords[0] * TILE_SIZE
+    my_knight.y = map_coords[1] * TILE_SIZE
+  end
 end
 
 draw_board
