@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 require 'ruby2d'
 
 BOARD_SIZE = 840
-TILE_SIZE = BOARD_SIZE/8
-BLACK_COLOR = '#6b7ee7'
+TILE_SIZE = BOARD_SIZE / 8
+BLACK_COLOR = '#660527'
 WHITE_COLOR = '#ffd8cc'
-
 
 set title: 'knight_moves.rb'
 set width: BOARD_SIZE
@@ -16,30 +17,29 @@ Rectangle.new(
   y: BOARD_SIZE,
   width: BOARD_SIZE,
   height: TILE_SIZE,
-  z:2
-
+  z: 2
 )
 
 def draw_board
   81.times do |time|
     if time.even?
-      Square.new(
-        size:TILE_SIZE, color: WHITE_COLOR,
-        x:time%9*TILE_SIZE,
-        y:(time/9).to_i*TILE_SIZE
-      )
+      make_square(WHITE_COLOR, time)
     else
-      Square.new(
-        size:TILE_SIZE, color: BLACK_COLOR,
-        x:time%9*TILE_SIZE,
-        y:(time/9).to_i*TILE_SIZE
-      )
+      make_square(BLACK_COLOR, time)
     end
   end
 end
 
-def world_to_map(x,y)
-  [(x / TILE_SIZE).to_i,(y / TILE_SIZE).to_i]
+def make_square(color, num)
+  Square.new(
+    size: TILE_SIZE, color: color,
+    x: num % 9 * TILE_SIZE,
+    y: (num / 9).to_i * TILE_SIZE
+  )
+end
+
+def world_to_map(x_coord, y_coord)
+  [(x_coord / TILE_SIZE).to_i, (y_coord / TILE_SIZE).to_i]
 end
 
 my_knight = Image.new(
