@@ -140,9 +140,7 @@ def calculate_moves(queue, towards)
     current_move_series = queue.pop
     next unless current_move_series.uniq == current_move_series
 
-    if current_move_series.last == towards
-      return current_move_series
-    end
+    return current_move_series if current_move_series.last == towards
 
     calculate_possible_moves(current_move_series.last).each do |possible_move|
       new_move = current_move_series + [possible_move]
