@@ -131,7 +131,7 @@ on :mouse_down do |event|
     knight_location_b = map_coords if knight_location != map_coords && event.button == :right
   elsif event.y > 840 && event.y < 890 && event.x > 550 && event.x < 710
     p knight_location
-    calculate_moves([[knight_location]], knight_location_b)
+    p calculate_moves([[knight_location]], knight_location_b)
   end
 end
 
@@ -141,8 +141,7 @@ def calculate_moves(queue, towards)
     next unless current_move_series.uniq == current_move_series
 
     if current_move_series.last == towards
-      p current_move_series
-      break
+      return current_move_series
     end
 
     calculate_possible_moves(current_move_series.last).each do |possible_move|
