@@ -2,7 +2,8 @@
 
 require 'ruby2d'
 slide_sound = Sound.new('slide.mp3')
-knight_location = [0, 0]
+knight_location = [4, 4]
+knight_location_b = [3, 4]
 
 BOARD_SIZE = 840
 TILE_SIZE = BOARD_SIZE / 8
@@ -24,12 +25,32 @@ Text.new(
   z: 10
 )
 
+Text.new(
+  'End Position',
+  font: 'Roboto-Black.ttf',
+  size: 24,
+  color: BLACK_COLOR,
+  x: 300,
+  y: BOARD_SIZE,
+  z: 10
+)
+
 @initial_position_label = Text.new(
   "#{knight_location[0]}, #{knight_location[1]}",
   font: 'Roboto-ThinItalic.ttf',
   size: 24,
   color: BLACK_COLOR,
   x: 80,
+  y: BOARD_SIZE + 30,
+  z: 10
+)
+
+@end_position_label = Text.new(
+  "#{knight_location_b[0]}, #{knight_location_b[1]}",
+  font: 'Roboto-ThinItalic.ttf',
+  size: 24,
+  color: BLACK_COLOR,
+  x: 360,
   y: BOARD_SIZE + 30,
   z: 10
 )
@@ -69,13 +90,26 @@ end
   'chessKnight.png',
   width: TILE_SIZE,
   height: TILE_SIZE,
+  x: knight_location[0] * TILE_SIZE,
+  y: knight_location[1] * TILE_SIZE,
+  z: 2
+)
+
+@my_second_knight = Image.new(
+  'chessKnightB.png',
+  width: TILE_SIZE,
+  height: TILE_SIZE,
+  x: knight_location_b[0] * TILE_SIZE,
+  y: knight_location_b[1] * TILE_SIZE,
   z: 1
 )
 on :mouse_down do |event|
   if event.y < BOARD_SIZE
     map_coords = world_to_map(event.x, event.y)
-    knight_location = map_coords
     slide_sound.play
+
+    knight_location = map_coords if knight_location_b != map_coords && event.button == :left
+    knight_location_b = map_coords if knight_location != map_coords && event.button == :right
   end
 end
 
@@ -86,7 +120,12 @@ end
 update do
   @my_knight.x = lerp(@my_knight.x, knight_location[0] * TILE_SIZE, 0.2)
   @my_knight.y = lerp(@my_knight.y, knight_location[1] * TILE_SIZE, 0.2)
+
+  @my_second_knight.x = lerp(@my_second_knight.x, knight_location_b[0] * TILE_SIZE, 0.2)
+  @my_second_knight.y = lerp(@my_second_knight.y, knight_location_b[1] * TILE_SIZE, 0.2)
+
   @initial_position_label.text = "#{knight_location[0]}, #{knight_location[1]}"
+  @end_position_label.text = "#{knight_location_b[0]}, #{knight_location_b[1]}"
 end
 
 draw_board
