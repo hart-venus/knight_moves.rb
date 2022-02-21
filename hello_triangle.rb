@@ -4,6 +4,9 @@ require 'ruby2d'
 slide_sound = Sound.new('slide.mp3')
 knight_location = [4, 4]
 knight_location_b = [3, 4]
+locked = false
+timer_running = false
+@move_sequence = []
 
 BOARD_SIZE = 840
 TILE_SIZE = BOARD_SIZE / 8
@@ -31,7 +34,24 @@ class Ticker
   end
 end
 
-ticker = Ticker.new do |tick, _, _|
+@timer = 0
+
+ticker = Ticker.new do |_, _, delta|
+  @timer += delta if timer_running
+
+  if @timer >= 0.5
+    next_move = @move_sequence.shift
+
+    if next_move.nil?
+      timer_running = false
+      locked = false
+    else
+      slide_sound.play unless next_move == knight_location
+      knight_location = next_move
+    end
+
+    @timer = 0
+  end
   @my_knight.x = lerp(@my_knight.x, knight_location[0] * TILE_SIZE, 0.2)
   @my_knight.y = lerp(@my_knight.y, knight_location[1] * TILE_SIZE, 0.2)
 
@@ -70,6 +90,16 @@ Text.new(
   x: 80,
   y: BOARD_SIZE + 30,
   z: 10
+)
+
+@move_counter = Text.new(
+  '',
+  font: 'Roboto-ThinItalic.ttf',
+  size: 24,
+  color: BLACK_COLOR,
+  x: BOARD_SIZE - 280,
+  y: BOARD_SIZE + 50,
+  z: 15
 )
 
 @end_position_label = Text.new(
@@ -150,15 +180,20 @@ end
   z: 1
 )
 on :mouse_down do |event|
-  if event.y < BOARD_SIZE
-    map_coords = world_to_map(event.x, event.y)
-    slide_sound.play
+  unless locked
+    if event.y < BOARD_SIZE
+      map_coords = world_to_map(event.x, event.y)
+      slide_sound.play
 
-    knight_location = map_coords if knight_location_b != map_coords && event.button == :left
-    knight_location_b = map_coords if knight_location != map_coords && event.button == :right
-  elsif event.y > 840 && event.y < 890 && event.x > 550 && event.x < 710
-    p knight_location
-    p calculate_moves([[knight_location]], knight_location_b)
+      knight_location = map_coords if knight_location_b != map_coords && event.button == :left
+      knight_location_b = map_coords if knight_location != map_coords && event.button == :right
+    elsif event.y > 840 && event.y < 890 && event.x > 550 && event.x < 710
+      p knight_location
+      @move_sequence = calculate_moves([[knight_location]], knight_location_b)
+      @move_counter.text = "#{@move_sequence.size - 1} moves"
+      locked = true
+      timer_running = true
+    end
   end
 end
 
@@ -198,14 +233,6 @@ end
 
 update do
   ticker.tick
-  # @my_knight.x = lerp(@my_knight.x, knight_location[0] * TILE_SIZE, 0.2)
-  # @my_knight.y = lerp(@my_knight.y, knight_location[1] * TILE_SIZE, 0.2)
-
-  # @my_second_knight.x = lerp(@my_second_knight.x, knight_location_b[0] * TILE_SIZE, 0.2)
-  # @my_second_knight.y = lerp(@my_second_knight.y, knight_location_b[1] * TILE_SIZE, 0.2)
-
-  # @initial_position_label.text = "#{knight_location[0]}, #{knight_location[1]}"
-  # @end_position_label.text = "#{knight_location_b[0]}, #{knight_location_b[1]}"
 end
 
 draw_board
