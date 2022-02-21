@@ -15,6 +15,33 @@ set width: BOARD_SIZE
 set height: BOARD_SIZE + TILE_SIZE
 set background: 'black'
 
+# ticker for running processes independent of refresh rate
+class Ticker
+  def initialize(&block)
+    @last = @start = Time.now
+    @tick = 0
+    @block = block
+  end
+
+  def tick
+    now = Time.now
+    @block.call(@tick, @last, now - @last)
+    @last = now
+    @tick += 1
+  end
+end
+
+ticker = Ticker.new do |tick, _, _|
+  @my_knight.x = lerp(@my_knight.x, knight_location[0] * TILE_SIZE, 0.2)
+  @my_knight.y = lerp(@my_knight.y, knight_location[1] * TILE_SIZE, 0.2)
+
+  @my_second_knight.x = lerp(@my_second_knight.x, knight_location_b[0] * TILE_SIZE, 0.2)
+  @my_second_knight.y = lerp(@my_second_knight.y, knight_location_b[1] * TILE_SIZE, 0.2)
+
+  @initial_position_label.text = "#{knight_location[0]}, #{knight_location[1]}"
+  @end_position_label.text = "#{knight_location_b[0]}, #{knight_location_b[1]}"
+end
+
 Text.new(
   'Starting Position',
   font: 'Roboto-Black.ttf',
@@ -170,14 +197,15 @@ def lerp(start, stop, step)
 end
 
 update do
-  @my_knight.x = lerp(@my_knight.x, knight_location[0] * TILE_SIZE, 0.2)
-  @my_knight.y = lerp(@my_knight.y, knight_location[1] * TILE_SIZE, 0.2)
+  ticker.tick
+  # @my_knight.x = lerp(@my_knight.x, knight_location[0] * TILE_SIZE, 0.2)
+  # @my_knight.y = lerp(@my_knight.y, knight_location[1] * TILE_SIZE, 0.2)
 
-  @my_second_knight.x = lerp(@my_second_knight.x, knight_location_b[0] * TILE_SIZE, 0.2)
-  @my_second_knight.y = lerp(@my_second_knight.y, knight_location_b[1] * TILE_SIZE, 0.2)
+  # @my_second_knight.x = lerp(@my_second_knight.x, knight_location_b[0] * TILE_SIZE, 0.2)
+  # @my_second_knight.y = lerp(@my_second_knight.y, knight_location_b[1] * TILE_SIZE, 0.2)
 
-  @initial_position_label.text = "#{knight_location[0]}, #{knight_location[1]}"
-  @end_position_label.text = "#{knight_location_b[0]}, #{knight_location_b[1]}"
+  # @initial_position_label.text = "#{knight_location[0]}, #{knight_location[1]}"
+  # @end_position_label.text = "#{knight_location_b[0]}, #{knight_location_b[1]}"
 end
 
 draw_board
